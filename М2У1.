@@ -1,0 +1,51 @@
+import telebot
+import random
+import os
+# Инициализация бота с использованием его токена
+bot = telebot.TeleBot("7884832305:AAGIXnsiWVKBXEDMNZtmR9De0B-uBFvhqH8")
+    
+# Обработчик команды '/start' и '/hello'
+@bot.message_handler(commands=['start', 'hello'])
+def send_welcome(message):
+    bot.reply_to(message, f'Привет! Я 🤖 {bot.get_me().first_name}!')
+    
+# Обработчик команды '/heh'
+@bot.message_handler(commands=['heh'])
+def send_heh(message):
+    count_heh = int(message.text.split()[1]) if len(message.text.split()) > 1 else 5
+    bot.reply_to(message, "he" * count_heh)
+@bot.message_handler(commands=['help'])
+def send_help(message):
+    help_text = (
+        "Команды бота:\n"
+        "👋 /start или /hello - приветствие\n"
+        "🔁/heh [число] - повторю 'he' указанное число раз\n"
+        "ℹ️ /help - список команд\n"
+        "😊/emoji - рандомная эмодзи\n"
+        "/bye - прощание\n"
+        "/mem - рандомный mem\n"
+        "/animal - рандомный mem с животным")
+    bot.reply_to(message, help_text)
+@bot.message_handler(commands=['bye'])
+def send_bye(message):
+    bot.reply_to(message,  "😢 Возвращайся, если что-то понадобится!")
+@bot.message_handler(commands=['emoji'])
+def send_random_emoji(message):
+    emojis = ["😊", "😂", "😎", "😢", "🤔", "😍", "😡", "🥳", "😴", "👍", "❤️", "🎉"]
+    random_emoji = random.choice(emojis)
+    bot.reply_to(message, f"Твой случайный смайлик: {random_emoji}")
+@bot.message_handler(commands=['mem'])
+def send_mem(message):
+    images = os.listdir('images')
+    img_name = random.choice(images)
+    with open(f'images/{img_name}', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+@bot.message_handler(commands=['animal'])
+def send_animal(message):
+    animals = os.listdir('anim')
+    img_name = random.choice(animals)
+    with open(f'anim/{img_name}', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+# Запуск бота
+bot.polling()
